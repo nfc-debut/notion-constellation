@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Pink Stars Banner</title>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #0a0010;
+  overflow: hidden;
+}
+
+canvas {
+  width: 100vw;
+  height: 180px; /* <-- bande longue et épaisse */
+  display: block;
+}
+</style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = 180;
+
+let stars = [];
+
+const COLORS = [
+  "#ff4fd8", "#ff7ad9", "#ffb3ec",
+  "#ff66cc", "#ff99ff"
+];
+
+function createStars() {
+  for (let i = 0; i < 80; i++) {
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 2 + 1,
+      baseR: Math.random() * 2 + 1,
+      dx: (Math.random() - 0.5) * 0.3,
+      dy: (Math.random() - 0.5) * 0.3,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      sparkle: Math.random() * Math.PI * 2
+    });
+  }
+}
+
+function drawStars() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  for (let s of stars) {
+
+    // mouvement léger
+    s.x += s.dx;
+    s.y += s.dy;
+
+    if (s.x < 0) s.x = canvas.width;
+    if (s.x > canvas.width) s.x = 0;
+    if (s.y < 0) s.y = canvas.height;
+    if (s.y > canvas.height) s.y = 0;
+
+    // effet scintillement
+    s.sparkle += 0.05;
+    let glow = Math.abs(Math.sin(s.sparkle)) * 6;
+
+    ctx.shadowBlur = glow;
+    ctx.shadowColor = s.color;
+
+    ctx.fillStyle = s.color;
+
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r + glow * 0.3, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+function animate() {
+  drawStars();
+  requestAnimationFrame(animate);
+}
+
+createStars();
+animate();
+</script>
+
+</body>
+</html>
